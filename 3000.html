@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Placement Test (Part 2)</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f7f7f7;
+    padding: 20px;
+    margin: 0;
+  }
+
+  .test-container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    margin-top: 0;
+    text-align: center;
+    color: #333;
+  }
+
+  .instruction {
+    color: #555;
+    margin-bottom: 25px;
+    text-align: center;
+    font-style: italic;
+    background: #eef;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  /* Group Styling */
+  .group-container {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    background: #fff;
+  }
+  
+  .group-header {
+    font-weight: bold;
+    color: #2f80ed;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+  }
+
+  .question {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #eee;
+  }
+
+  .question:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .definition {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.05em;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  button.option {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    color: #333;
+  }
+
+  button.option:hover:not(.disabled):not(.selected) {
+    border-color: #666;
+    background: #f9f9f9;
+  }
+
+  button.option.selected {
+    background: #2f80ed;
+    border-color: #2f80ed;
+    color: white;
+  }
+
+  button.option.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #eee;
+  }
+  
+  /* Not Sure Button Styling */
+  button.option.not-sure {
+    border-style: dashed;
+    color: #666;
+  }
+  
+  button.option.not-sure.selected {
+    background: #7f8c8d;
+    border-color: #7f8c8d;
+    color: white;
+  }
+
+  .submit-container {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .submit-btn {
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 6px;
+    border: none;
+    background: #2f80ed;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(47, 128, 237, 0.3);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ccc;
+    box-shadow: none;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background: #1d6ad6;
+  }
+  
+  #result-display {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 8px;
+    display: none;
+  }
+  .score-good { background: #d4edda; color: #155724; }
+  .score-mid { background: #fff3cd; color: #856404; }
+  .score-bad { background: #f8d7da; color: #721c24; }
+
+</style>
+</head>
+<body>
+
+<div class="test-container">
+  <h1>Vocabulary Placement Test (Part 3)</h1>
+  <p class="instruction">Choose the correct word for each definition. Words in each section can be used only once. Select "Not Sure" if you don't know.</p>
+
+  <div id="quiz-content"></div>
+
+  <div class="submit-container">
+    <button class="submit-btn" id="submitBtn" disabled>Submit Test</button>
+  </div>
+  
+  <div id="result-display"></div>
+</div>
+
+<script>
+  // Data transcribed from the NEW set of screenshots
+  // 10 Groups x 3 Questions = 30 Questions total found in the images.
+  const quizData = [
+    {
+      words: ["agency", "heel", "pavement", "penalty", "principal", "youth"],
+      questions: [
+        { id: 1, def: "back of your foot", correct: "heel" },
+        { id: 2, def: "person in charge of a school", correct: "principal" },
+        { id: 3, def: "punishment", correct: "penalty" }
+      ]
+    },
+    {
+      words: ["element", "jail", "joint", "objective", "portrait", "variety"],
+      questions: [
+        { id: 4, def: "goal", correct: "objective" },
+        { id: 5, def: "picture", correct: "portrait" },
+        { id: 6, def: "place where criminals are kept", correct: "jail" }
+      ]
+    },
+    {
+      words: ["defeat", "infant", "nuclear", "outrage", "prospect", "rival"],
+      questions: [
+        { id: 7, def: "loss", correct: "defeat" },
+        { id: 8, def: "person you oppose", correct: "rival" },
+        { id: 9, def: "small child", correct: "infant" }
+      ]
+    },
+    {
+      words: ["coincide", "derive", "devote", "permit", "publish", "regret"],
+      questions: [
+        { id: 10, def: "feel bad about doing something", correct: "regret" },
+        { id: 11, def: "give all your time and attention", correct: "devote" },
+        { id: 12, def: "happen at the same time", correct: "coincide" }
+      ]
+    },
+    {
+      words: ["civilize", "discharge", "graduate", "imply", "merge", "perceive"],
+      questions: [
+        { id: 13, def: "join", correct: "merge" },
+        { id: 14, def: "release", correct: "discharge" },
+        { id: 15, def: "suggest", correct: "imply" }
+      ]
+    },
+    {
+      words: ["assault", "bargain", "compete", "dedicate", "nominate", "restrain"],
+      questions: [
+        { id: 16, def: "attack", correct: "assault" },
+        { id: 17, def: "hold back", correct: "restrain" },
+        { id: 18, def: "try to win", correct: "compete" }
+      ]
+    },
+    {
+      words: ["fundamental", "humorous", "interior", "numerous", "prompt", "religious"],
+      questions: [
+        { id: 19, def: "basic", correct: "fundamental" },
+        { id: 20, def: "many", correct: "numerous" },
+        { id: 21, def: "on time", correct: "prompt" }
+      ]
+    },
+    {
+      words: ["legislative", "mechanic", "mortal", "random", "rear", "reluctant"],
+      questions: [
+        { id: 22, def: "back of something", correct: "rear" },
+        { id: 23, def: "can die", correct: "mortal" },
+        { id: 24, def: "without order", correct: "random" }
+      ]
+    },
+        {
+      words: ["colleague", "fate", "fee", "hint", "status", "talent"],
+      questions: [
+        { id: 25, def: "ability or skill", correct: "talent" },
+        { id: 26, def: "clue", correct: "hint" },
+        { id: 27, def: "person you work with", correct: "colleague" }
+      ]
+    },
+        {
+      words: ["circuit", "clinic", "format", "origin", "peak", "routine"],
+      questions: [
+        { id: 28, def: "place where you can see a doctor", correct: "clinic" },
+        { id: 29, def: "top", correct: "peak" },
+        { id: 30, def: "what you usually do each day", correct: "routine" }
+      ]
+    },
+  ];
+
+  const userAnswers = {};
+  const totalQuestions = 30; // Updated based on the images provided
+
+  const contentDiv = document.getElementById("quiz-content");
+  const submitBtn = document.getElementById("submitBtn");
+  const resultDisplay = document.getElementById("result-display");
+
+  function initQuiz() {
+    quizData.forEach((group, groupIndex) => {
+      
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "group-container";
+      
+      const groupHeader = document.createElement("div");
+      groupHeader.className = "group-header";
+      groupHeader.textContent = `Group ${groupIndex + 1}`;
+      groupDiv.appendChild(groupHeader);
+
+      group.questions.forEach(q => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.dataset.id = q.id;
+        qDiv.dataset.groupIndex = groupIndex;
+
+        const defDiv = document.createElement("div");
+        defDiv.className = "definition";
+        defDiv.textContent = `${q.id}. ${q.def}`;
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+        
+        qDiv.appendChild(defDiv);
+        qDiv.appendChild(optionsDiv);
+        groupDiv.appendChild(qDiv);
+      });
+
+      contentDiv.appendChild(groupDiv);
+    });
+
+    renderAllOptions();
+  }
+
+  function renderAllOptions() {
+    const questionDivs = document.querySelectorAll(".question");
+
+    questionDivs.forEach(qDiv => {
+      const qId = parseInt(qDiv.dataset.id);
+      const groupIndex = parseInt(qDiv.dataset.groupIndex);
+      const optionsContainer = qDiv.querySelector(".options");
+      
+      const groupInfo = quizData[groupIndex];
+      
+      // Find used words in this specific group
+      const wordsUsedInGroup = new Set();
+      groupInfo.questions.forEach(q => {
+        if (q.id !== qId && userAnswers[q.id] && userAnswers[q.id] !== "Not Sure") {
+          wordsUsedInGroup.add(userAnswers[q.id]);
+        }
+      });
+
+      optionsContainer.innerHTML = "";
+
+      groupInfo.words.forEach(word => {
+        const btn = document.createElement("button");
+        btn.textContent = word;
+        btn.className = "option";
+        
+        const isSelectedHere = userAnswers[qId] === word;
+        const isUsedElsewhereInGroup = wordsUsedInGroup.has(word);
+
+        if (isSelectedHere) btn.classList.add("selected");
+        
+        if (isUsedElsewhereInGroup) {
+          btn.classList.add("disabled");
+          btn.disabled = true;
+        }
+
+        btn.addEventListener("click", () => {
+           if (userAnswers[qId] === word) {
+             delete userAnswers[qId];
+           } else {
+             userAnswers[qId] = word;
+           }
+           renderAllOptions();
+           updateSubmitState();
+        });
+
+        optionsContainer.appendChild(btn);
+      });
+
+      // "Not Sure" Button
+      const nsBtn = document.createElement("button");
+      nsBtn.textContent = "Not Sure";
+      nsBtn.className = "option not-sure";
+      if (userAnswers[qId] === "Not Sure") nsBtn.classList.add("selected");
+
+      nsBtn.addEventListener("click", () => {
+         if (userAnswers[qId] === "Not Sure") {
+           delete userAnswers[qId];
+         } else {
+           userAnswers[qId] = "Not Sure";
+         }
+         renderAllOptions();
+         updateSubmitState();
+      });
+
+      optionsContainer.appendChild(nsBtn);
+    });
+  }
+
+  function updateSubmitState() {
+    const answeredCount = Object.keys(userAnswers).length;
+    submitBtn.disabled = answeredCount !== totalQuestions;
+    
+    if(answeredCount !== totalQuestions) {
+        submitBtn.textContent = `Answer all questions (${answeredCount}/${totalQuestions})`;
+    } else {
+        submitBtn.textContent = "Submit Test";
+    }
+  }
+
+  submitBtn.addEventListener("click", () => {
+    let score = 0;
+
+    quizData.forEach(group => {
+      group.questions.forEach(q => {
+        const userAnswer = userAnswers[q.id];
+        if (userAnswer === q.correct) {
+          score++;
+        }
+      });
+    });
+
+    const percentage = Math.round((score / totalQuestions) * 100);
+    
+    resultDisplay.style.display = "block";
+    resultDisplay.textContent = `${score}/${totalQuestions} it's ${percentage}%`;
+    
+    resultDisplay.className = "";
+    if(percentage >= 80) resultDisplay.classList.add("score-good");
+    else if(percentage >= 50) resultDisplay.classList.add("score-mid");
+    else resultDisplay.classList.add("score-bad");
+
+    resultDisplay.scrollIntoView({ behavior: 'smooth' });
+    
+    document.querySelectorAll("button.option").forEach(btn => btn.disabled = true);
+    submitBtn.style.display = "none";
+  });
+
+  initQuiz();
+</script>
+
+</body>
+</html>
