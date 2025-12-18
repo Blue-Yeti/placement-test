@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Placement Test (New)</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f7f7f7;
+    padding: 20px;
+    margin: 0;
+  }
+
+  .test-container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    margin-top: 0;
+    text-align: center;
+    color: #333;
+  }
+
+  .instruction {
+    color: #555;
+    margin-bottom: 25px;
+    text-align: center;
+    font-style: italic;
+    background: #eef;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  /* Group Styling */
+  .group-container {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    background: #fff;
+  }
+  
+  .group-header {
+    font-weight: bold;
+    color: #2f80ed;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+  }
+  
+  /* Styling for Section Headers (like 3,000 Word Level) */
+  .section-divider {
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 40px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+    color: #333;
+    font-style: italic;
+  }
+
+  .question {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #eee;
+  }
+
+  .question:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .definition {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.05em;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  button.option {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    color: #333;
+  }
+
+  button.option:hover:not(.disabled):not(.selected) {
+    border-color: #666;
+    background: #f9f9f9;
+  }
+
+  button.option.selected {
+    background: #2f80ed;
+    border-color: #2f80ed;
+    color: white;
+  }
+
+  button.option.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #eee;
+  }
+  
+  button.option.not-sure {
+    border-style: dashed;
+    color: #666;
+  }
+  
+  button.option.not-sure.selected {
+    background: #7f8c8d;
+    border-color: #7f8c8d;
+    color: white;
+  }
+
+  .submit-container {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .submit-btn {
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 6px;
+    border: none;
+    background: #2f80ed;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(47, 128, 237, 0.3);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ccc;
+    box-shadow: none;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background: #1d6ad6;
+  }
+  
+  #result-display {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 8px;
+    display: none;
+  }
+  .score-good { background: #d4edda; color: #155724; }
+  .score-mid { background: #fff3cd; color: #856404; }
+  .score-bad { background: #f8d7da; color: #721c24; }
+
+</style>
+</head>
+<body>
+
+<div class="test-container">
+  <h1>Vocabulary Placement Test</h1>
+  <p class="instruction">Choose the correct word for each definition. Words in each section can be used only once. Select "Not Sure" if you don't know.</p>
+
+  <div id="quiz-content"></div>
+
+  <div class="submit-container">
+    <button class="submit-btn" id="submitBtn" disabled>Submit Test</button>
+  </div>
+  
+  <div id="result-display"></div>
+</div>
+
+<script>
+  // Data transcribed from the NEW screenshots
+  // 12 Groups total (10 general + 2 from "3000 word level") = 36 Questions
+  const quizData = [
+    {
+      words: ["capital", "career", "committee", "exam", "fence", "option"],
+      questions: [
+        { id: 1, def: "choice", correct: "option" },
+        { id: 2, def: "job", correct: "career" },
+        { id: 3, def: "test", correct: "exam" }
+      ]
+    },
+    {
+      words: ["guard", "lesson", "library", "license", "monkey", "soup"],
+      questions: [
+        { id: 4, def: "food made with lots of water", correct: "soup" },
+        { id: 5, def: "person who watches for danger", correct: "guard" },
+        { id: 6, def: "place where many books are kept", correct: "library" }
+      ]
+    },
+    {
+      words: ["brake", "crown", "hero", "language", "mission", "tale"],
+      questions: [
+        { id: 7, def: "hat worn by a king or queen", correct: "crown" },
+        { id: 8, def: "job", correct: "mission" },
+        { id: 9, def: "things that stop a car", correct: "brake" }
+      ]
+    },
+    {
+      words: ["affair", "carrot", "damage", "desert", "shelter", "thief"],
+      questions: [
+        { id: 10, def: "person who steals", correct: "thief" },
+        { id: 11, def: "place that gives protection", correct: "shelter" },
+        { id: 12, def: "place with little rain", correct: "desert" }
+      ]
+    },
+    {
+      words: ["advice", "hobby", "industry", "soil", "steak", "storm"],
+      questions: [
+        { id: 13, def: "bad weather", correct: "storm" },
+        { id: 14, def: "earth", correct: "soil" },
+        { id: 15, def: "things that you often enjoy doing", correct: "hobby" }
+      ]
+    },
+    {
+      words: ["burst", "cheat", "direct", "operate", "presume", "wander"],
+      questions: [
+        { id: 16, def: "believe something is true", correct: "presume" },
+        { id: 17, def: "break open", correct: "burst" },
+        { id: 18, def: "make something work", correct: "operate" }
+      ]
+    },
+    {
+      words: ["develop", "identify", "improve", "possess", "provide", "sew"],
+      questions: [
+        { id: 19, def: "give", correct: "provide" },
+        { id: 20, def: "have", correct: "possess" },
+        { id: 21, def: "make better", correct: "improve" }
+      ]
+    },
+    {
+      words: ["complain", "increase", "pray", "produce", "recognize", "whip"],
+      questions: [
+        { id: 22, def: "get larger", correct: "increase" },
+        { id: 23, def: "know and remember", correct: "recognize" },
+        { id: 24, def: "make", correct: "produce" }
+      ]
+    },
+    {
+      words: ["curious", "defensive", "energetic", "nervous", "various", "wicked"],
+      questions: [
+        { id: 25, def: "different kinds of things", correct: "various" },
+        { id: 26, def: "very bad", correct: "wicked" },
+        { id: 27, def: "wanting to know", correct: "curious" }
+      ]
+    },
+    {
+      words: ["advanced", "cruel", "lone", "stiff", "typical", "upset"],
+      questions: [
+        { id: 28, def: "at a high level", correct: "advanced" },
+        { id: 29, def: "not kind", correct: "cruel" },
+        { id: 30, def: "single", correct: "lone" }
+      ]
+    },
+
+  ];
+
+  const userAnswers = {};
+  const totalQuestions = 30; // Updated total based on 12 groups
+
+  const contentDiv = document.getElementById("quiz-content");
+  const submitBtn = document.getElementById("submitBtn");
+  const resultDisplay = document.getElementById("result-display");
+
+  function initQuiz() {
+    quizData.forEach((group, groupIndex) => {
+      
+      // If a section title exists (e.g., 3,000 Word Level), add it
+      if (group.sectionTitle) {
+        const sectionDiv = document.createElement("div");
+        sectionDiv.className = "section-divider";
+        sectionDiv.textContent = group.sectionTitle;
+        contentDiv.appendChild(sectionDiv);
+      }
+
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "group-container";
+      
+      const groupHeader = document.createElement("div");
+      groupHeader.className = "group-header";
+      groupHeader.textContent = `Group ${groupIndex + 1}`;
+      groupDiv.appendChild(groupHeader);
+
+      group.questions.forEach(q => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.dataset.id = q.id;
+        qDiv.dataset.groupIndex = groupIndex;
+
+        const defDiv = document.createElement("div");
+        defDiv.className = "definition";
+        defDiv.textContent = `${q.id}. ${q.def}`;
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+        
+        qDiv.appendChild(defDiv);
+        qDiv.appendChild(optionsDiv);
+        groupDiv.appendChild(qDiv);
+      });
+
+      contentDiv.appendChild(groupDiv);
+    });
+
+    renderAllOptions();
+  }
+
+  function renderAllOptions() {
+    const questionDivs = document.querySelectorAll(".question");
+
+    questionDivs.forEach(qDiv => {
+      const qId = parseInt(qDiv.dataset.id);
+      const groupIndex = parseInt(qDiv.dataset.groupIndex);
+      const optionsContainer = qDiv.querySelector(".options");
+      
+      const groupInfo = quizData[groupIndex];
+      
+      // Find used words in this specific group
+      const wordsUsedInGroup = new Set();
+      groupInfo.questions.forEach(q => {
+        if (q.id !== qId && userAnswers[q.id] && userAnswers[q.id] !== "Not Sure") {
+          wordsUsedInGroup.add(userAnswers[q.id]);
+        }
+      });
+
+      optionsContainer.innerHTML = "";
+
+      groupInfo.words.forEach(word => {
+        const btn = document.createElement("button");
+        btn.textContent = word;
+        btn.className = "option";
+        
+        const isSelectedHere = userAnswers[qId] === word;
+        const isUsedElsewhereInGroup = wordsUsedInGroup.has(word);
+
+        if (isSelectedHere) btn.classList.add("selected");
+        
+        if (isUsedElsewhereInGroup) {
+          btn.classList.add("disabled");
+          btn.disabled = true;
+        }
+
+        btn.addEventListener("click", () => {
+           if (userAnswers[qId] === word) {
+             delete userAnswers[qId];
+           } else {
+             userAnswers[qId] = word;
+           }
+           renderAllOptions();
+           updateSubmitState();
+        });
+
+        optionsContainer.appendChild(btn);
+      });
+
+      // "Not Sure" Button
+      const nsBtn = document.createElement("button");
+      nsBtn.textContent = "Not Sure";
+      nsBtn.className = "option not-sure";
+      if (userAnswers[qId] === "Not Sure") nsBtn.classList.add("selected");
+
+      nsBtn.addEventListener("click", () => {
+         if (userAnswers[qId] === "Not Sure") {
+           delete userAnswers[qId];
+         } else {
+           userAnswers[qId] = "Not Sure";
+         }
+         renderAllOptions();
+         updateSubmitState();
+      });
+
+      optionsContainer.appendChild(nsBtn);
+    });
+  }
+
+  function updateSubmitState() {
+    const answeredCount = Object.keys(userAnswers).length;
+    submitBtn.disabled = answeredCount !== totalQuestions;
+    
+    if(answeredCount !== totalQuestions) {
+        submitBtn.textContent = `Answer all questions (${answeredCount}/${totalQuestions})`;
+    } else {
+        submitBtn.textContent = "Submit Test";
+    }
+  }
+
+  submitBtn.addEventListener("click", () => {
+    let score = 0;
+
+    quizData.forEach(group => {
+      group.questions.forEach(q => {
+        const userAnswer = userAnswers[q.id];
+        if (userAnswer === q.correct) {
+          score++;
+        }
+      });
+    });
+
+    const percentage = Math.round((score / totalQuestions) * 100);
+    
+    resultDisplay.style.display = "block";
+    resultDisplay.textContent = `${score}/${totalQuestions} it's ${percentage}%`;
+    
+    resultDisplay.className = "";
+    if(percentage >= 80) resultDisplay.classList.add("score-good");
+    else if(percentage >= 50) resultDisplay.classList.add("score-mid");
+    else resultDisplay.classList.add("score-bad");
+
+    resultDisplay.scrollIntoView({ behavior: 'smooth' });
+    
+    document.querySelectorAll("button.option").forEach(btn => btn.disabled = true);
+    submitBtn.style.display = "none";
+  });
+
+  initQuiz();
+</script>
+
+</body>
+</html>
